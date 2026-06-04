@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shree Institute, Mandangad</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f0f4f8;
+            color: #333;
+        }
+        /* Header & Navigation */
+        header {
+            background: linear-gradient(135deg, #102a43, #244a70);
+            color: white;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .nav-container {
+            width: 90%;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 28px; 
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #ffd700;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        /* Mobile Menu Toggle Button */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+        }
+        .menu-toggle span {
+            width: 28px;
+            height: 3px;
+            background-color: white;
+            margin: 4px 0;
+            transition: 0.3s;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            align-items: center;
+        }
+        nav ul li {
+            margin-left: 20px;
+            position: relative;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 10px 0;
+            display: inline-block;
+        }
+        nav ul li a:hover {
+            color: #ffd700;
+        }
+
+        /* Admin Dropdown Styling */
+        .dropdown {
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #ffffff;
+            min-width: 180px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1001;
+            top: 100%;
+            left: 0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .dropdown-content a {
+            color: #102a43;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 15px;
+            font-weight: bold;
+            border-bottom: 1px solid #f0f4f8;
+            transition: background 0.3s;
+        }
+        .dropdown-content a:hover {
+            background-color: #ffd700;
+            color: #102a43;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* Rectangle Shape Background Slideshow */
+        .hero-container-box {
+            width: 90%;
+            margin: 20px auto 0 auto;
+        }
+        .hero-slider-container {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+            z-index: 1;
+        }
+        .slide.active {
+            opacity: 1;
+            z-index: 2;
+        }
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(16, 42, 67, 0.8), rgba(36, 74, 112, 0.8));
+        }
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+            color: white;
+            width: 90%;
+            max-width: 800px;
+        }
+        .hero-content h2 {
+            font-size: 32px;
+            margin-bottom: 12px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+        }
+        .hero-content p {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+            margin-bottom: 10px;
+        }
+        .success-tag {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        /* Main Content Sections */
+        .container {
+            width: 90%;
+            margin: 30px auto;
+        }
+        section {
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            scroll-margin-top: 90px;
+        }
+        
+        #message { background-color: #ffffff; border-left: 8px solid #102a43; }
+        #regular { background-color: #e3fafc; border-left: 8px solid #0c8599; }
+        #special { background-color: #f3f0ff; border-left: 8px solid #6f2dbd; }
+        #exams { background-color: #fff9db; border-left: 8px solid #f59f00; }
+        #enquiry { background-color: #fff4e6; border-left: 8px solid #e8590c; }
+        
+        section h3 {
+            color: #102a43;
+            font-size: 22px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(0,0,0,0.1);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            align-items: stretch;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card h4 {
+            color: #102a43;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .section-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            background-color: white;
+        }
+        button {
+            background-color: #e8590c;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #b84306;
+        }
+        .phone-link {
+            color: #102a43;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .phone-link:hover {
+            text-decoration: underline;
+        }
+        footer {
+            text-align: center;
+            padding: 25px;
+            background: #102a43;
+            color: white;
+            margin-top: 40px;
+            font-size: 14px;
+        }
+
+        /* Effective Message Styles */
+        .effective-msg-box h4 {
+            color: #d9480f;
+            font-size: 20px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .effective-msg-box p {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #444;
+            margin-bottom: 15px;
+        }
+        .course-bullets {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+        .course-bullets li {
+            font-size: 15px;
+            font-weight: 600;
+            color: #102a43;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+        }
+        .course-bullets li::before {
+            content: "⚡";
+            margin-right: 10px;
+        }
+        .highlight-badge {
+            background-color: #e6f4ea;
+            color: #137333;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            border-left: 5px solid #137333;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        /* ==========================================================================
+           MOBILE VIEW STYLES (मोबाईलसाठीचे खास बदल)
+           ========================================================================== */
+        @media (max-width: 991px) {
+            .logo {
+                font-size: 24px;
+            }
+            .menu-toggle {
+                display: flex; /* मोबाईलवर थ्री-लाईन बटण दिसेल */
+            }
+            nav {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: #102a43;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease-in-out;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }
+            nav.active {
+                max-height: 500px; /* मेनू उघडल्यावर उंची वाढेल */
+                overflow-y: auto;
+            }
+            nav ul {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 15px 20px;
+            }
+            nav ul li {
+                margin-left: 0;
+                margin-bottom: 15px;
+                width: 100%;
+            }
+            nav ul li a {
+                padding: 8px 0;
+                width: 100%;
+                font-size: 17px;
+            }
+            
+            /* Admin Dropdown for Mobile */
+            .dropdown {
+                width: 100%;
+            }
+            .dropdown-content {
+                position: relative;
+                box-shadow: none;
+                background-color: #1a3a5c;
+                margin-top: 5px;
+                border-radius: 4px;
+                display: block; /* मोबाईलवर आधीपासूनच खुला दिसेल जेणेकरून सहज क्लिक करता येईल */
+            }
+            .dropdown-content a {
+                color: #ffffff;
+                border-bottom: 1px solid #244a70;
+                padding: 10px 15px;
+            }
+
+            .hero-slider-container {
+                height: 320px; /* मोबाईलवर स्लाईडरची उंची थोडी कमी केली */
+            }
+            .hero-content h2 {
+                font-size: 24px;
+            }
+            .hero-content p {
+                font-size: 15px;
+            }
+            .success-tag {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+            section {
+                padding: 20px;
+            }
+            section h3 {
+                font-size: 19px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <div class="logo">Shree Institute</div>
+            
+            <!-- Mobile Menu Toggle Button -->
+            <button class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav id="navbar">
+                <ul>
+                    <li><a href="#home" onclick="closeMenu()">Home</a></li>
+                    <li><a href="#message" onclick="closeMenu()">Why Choose Us?</a></li>
+                    <li><a href="#regular" onclick="closeMenu()">Regular Classes</a></li>
+                    <li><a href="#special" onclick="closeMenu()">Special Courses</a></li>
+                    <li><a href="#exams" onclick="closeMenu()">Competitive Exams</a></li>
+                    <li><a href="#enquiry" onclick="closeMenu()">Enquiry Now</a></li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0)" style="color: #ffd700;">Admin ▾</a>
+                        <div class="dropdown-content">
+                            <a href="javascript:void(0)" onclick="accessAdmin('enquiry')">📥 Enquiry List</a>
+                            <a href="javascript:void(0)" onclick="accessAdmin('fees')">💰 Fee Details</a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Rectangle Shape Slideshow Section -->
+    <div class="hero-container-box" id="home">
+        <div class="hero-slider-container">
+            <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200');"></div>
+            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?q=80&w=1200');"></div>
+            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=1200');"></div>
+            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1200');"></div>
+            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=1200');"></div>
+            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1200');"></div>
+            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200');"></div>
+            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1200');"></div>
+            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1588072432836-e10032774350?q=80&w=1200');"></div>
+            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=1200');"></div>
+
+            <div class="hero-content">
+                <h2>Shree Institute, Mandangad</h2>
+                <p>The Hub for Quality and Standard Education!</p>
+                <div class="success-tag">🎯 Unmatched 100% Success in Competitive Exams!</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <!-- Director's Invitation & Profile -->
+        <section id="message">
+            <h3>📢 Director's Invitation & Institute Profile</h3>
+            <div class="grid">
+                <div class="effective-msg-box">
+                    <h4>Secure Your Child's Bright Future Today!</h4>
+                    <p>
+                        Welcome to <strong>Shree Institute, Mandangad</strong>. We don't just teach; we shape careers and build rock-solid foundations. Our scientifically proven methodology guarantees a <strong>100% Success Result</strong> for our students by turning complex subjects into enjoyable learning experiences.
+                    </p>
+                    <div class="highlight-badge">
+                        🔥 ADMISSIONS OPEN FOR THE NEW BATCH! Give your child the ultimate competitive edge. Limited Seats Available!
+                    </div>
+                </div>
+                <div>
+                    <p style="font-weight: bold; color: #102a43; margin-bottom: 10px; font-size: 17px;">Our Comprehensive High-Performance Programs:</p>
+                    <ul class="course-bullets">
+                        <li>Regular Classes (1st to 10th Std - All Boards) with deep concept clearing.</li>
+                        <li>Proactive Abacus & Brain Development for lightning-fast calculations.</li>
+                        <li>Pro VedicMaths Mastery to solve complex equations within seconds.</li>
+                        <li>Prowrite Hastakshar for beautiful, legible and score-boosting handwriting.</li>
+                        <li>Elite Coaching for Scholarship, JNV Navodaya, NMMS, and Manthan Exams.</li>
+                    </ul>
+                    <p style="font-weight: bold; color: #28a745; font-size: 15px;">✓ Expert Faculty ✓ Personalized Attention ✓ Weekly Practice Tests</p>
+                </div>
+            </div>
+            <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid #dee2e6;">
+                <p style="font-size: 18px; font-weight: bold; color: #102a43;">- Mr. Mahesh Sutar Sir (Director)</p>
+                <p style="margin-top: 5px; font-weight: 500;">📞 Call Now for Admissions: <a href="tel:8983383836" class="phone-link">8983383836</a></p>
+            </div>
+        </section>
+
+        <!-- Regular Classes Section -->
+        <section id="regular">
+            <h3>📖 Regular Classes (1st to 10th Std)</h3>
+            <div class="grid">
+                <div class="card">
+                    <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=500" alt="Science Experiments" class="section-img">
+                    <h4>Science & Experiments</h4>
+                    <p>Simplifying complex scientific concepts through live experiments and practical learning models.</p>
+                </div>
+                <div class="card">
+                    <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=500" alt="Maths and English" class="section-img">
+                    <h4>Maths & English</h4>
+                    <p>Mastering English grammar and clarifying intricate Mathematics theorems with effortless methods.</p>
+                </div>
+                <div class="card" style="justify-content: center; background: #ffffff;">
+                    <h4>Key Highlights:</h4>
+                    <p style="margin-top: 10px; line-height: 1.6;">• 1st to 10th (All State/National Boards)<br>• Individual Attention to Every Student<br>• Comprehensive Mock Tests Every Sunday<br>• Focus on Core Foundation Building</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Special Courses Section -->
+        <section id="special">
+            <h3>✨ Our Special Skill Courses</h3>
+            <div class="grid">
+                <div class="card">
+                    <img src="https://images.unsplash.com/photo-1610116306796-6fea9f4fae38?q=80&w=500" alt="Abacus Tool" class="section-img">
+                    <h4>Proactive Abacus & Brain Development</h4>
+                    <p>Using the advanced Abacus tool to stimulate both left and right brain development, resulting in rapid mental calculation.</p>
+                </div>
+                <div class="card">
+                    <img src="https://images.unsplash.com/photo-1509228468518-180dd4864904?q=80&w=500" alt="Mathematics Sutras" class="section-img">
+                    <h4>Pro VedicMaths & Sutras</h4>
+                    <p>Utilizing shortcut Vedic sutras to solve massive multiplications and divisions mentally within fractions of a second.</p>
+                </div>
+                <div class="card">
+                    <img src="https://images.unsplash.com/photo-1516962215378-7fa2e137ae93?q=80&w=500" alt="Handwriting Art" class="section-img">
+                    <h4>Prowrite Hastakshar</h4>
+                    <p>Transforming handwriting into beautiful, cursive art to boost student confidence and maximize exam scores.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Competitive Exams Section -->
+        <section id="exams">
+            <h3>🏆 Competitive Exams (4th, 5th & 8th Std)</h3>
+            <p style="margin-bottom: 20px; font-size: 16px; font-weight: bold; color: #d9480f;">🎯 Proven Record of 100% Success in Scholarship, Navodaya, NMMS, and Manthan Exams!</p>
+            <div class="grid">
+                <div class="card">
+                    <h4>Scholarship & Navodaya</h4>
+                    <p>Perfect training for 5th and 8th Std Scholarship Exams and Jawaharlal Navodaya Vidyalaya Entrance tests.</p>
+                </div>
+                <div class="card">
+                    <h4>NMMS & MTS</h4>
+                    <p>Rigorous preparation and strategies for 8th Std NMMS Scholarship and National Talent Search Examinations.</p>
+                </div>
+                <div class="card">
+                    <h4>Manthan Exam</h4>
+                    <p>State-level standard preparation curated with precise mock drill papers for the Manthan series.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Enquiry Form Section -->
+        <section id="enquiry">
+            <h3>📝 Admission Enquiry Form</h3>
+            <p style="margin-bottom: 20px; font-size: 14px; color: #666;">Fill out the details below to reserve your seat. Our admissions team will contact you shortly.</p>
+            
+            <form id="enquiryForm" onsubmit="event.preventDefault(); addEnquiryRecord();">
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Student Full Name</label>
+                        <input type="text" id="enqName" required placeholder="Enter full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Current Standard / Class</label>
+                        <input type="text" id="enqStd" required placeholder="e.g. 5th Std, 8th Std">
+                    </div>
+                    <div class="form-group">
+                        <label>Date of Birth</label>
+                        <input type="date" id="enqDob" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Desired Course</label>
+                        <select id="enqCourse" required>
+                            <option value="" disabled selected>--- Choose a Course ---</option>
+                            <option value="Regular Class (School Syllabus - Eng/Maths/Sci)">Regular Class (School Syllabus - Eng/Maths/Sci)</option>
+                            <option value="Basic Foundation Course (Read/Write/Basic Math)">Basic Foundation Course (Read/Write/Basic Math)</option>
+                            <option value="Scholarship Exam">Scholarship Exam</option>
+                            <option value="Manthan Exam">Manthan Exam</option>
+                            <option value="BDS Exam">BDS Exam</option>
+                            <option value="Navodaya JNV">Navodaya JNV</option>
+                            <option value="Sainik School Exam">Sainik School Exam</option>
+                            <option value="ABACUS">ABACUS</option>
+                            <option value="Vedic Maths">Vedic Maths</option>
+                            <option value="Handwriting">Handwriting</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" style="width: 100%; margin-top: 10px;">Submit Application</button>
+            </form>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>© 2026 Shree Institute, Mandangad. All Rights Reserved.<br>Designed for Mahesh Sir.</p>
+    </footer>
+
+    <script>
+        // --- Mobile Menu Toggle Logic (मोबाईल मेनू उघडणे/बंद करणे) ---
+        function toggleMenu() {
+            const navbar = document.getElementById('navbar');
+            navbar.classList.toggle('active');
+        }
+        
+        function closeMenu() {
+            const navbar = document.getElementById('navbar');
+            navbar.classList.remove('active');
+        }
+
+        // --- Automatic Slideshow Logic ---
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const slideInterval = 3000;
+
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+
+        setInterval(nextSlide, slideInterval);
+
+        // --- Local Storage & Admin Area ---
+        let enquiryData = JSON.parse(localStorage.getItem('enquiries')) || [];
+
+        function addEnquiryRecord() {
+            const name = document.getElementById('enqName').value;
+            const std = document.getElementById('enqStd').value;
+            const dob = document.getElementById('enqDob').value;
+            const course = document.getElementById('enqCourse').value;
+
+            const newRecord = { name, std, dob, course };
+            enquiryData.push(newRecord);
+            localStorage.setItem('enquiries', JSON.stringify(enquiryData));
+
+            alert('✅ Application submitted successfully! Mahesh Sir will contact you shortly.');
+            document.getElementById('enquiryForm').reset();
+        }
+
+        function accessAdmin(type) {
+            const password = prompt("🔐 Secure Login:\nPlease enter Admin Password (For Mahesh Sir Only):");
+            
+            if (password === '8983') {
+                if (type === 'enquiry') {
+                    exportEnquiryToExcel();
+                } else if (type === 'fees') {
+                    alert('💰 Fee Management System Loading...');
+                }
+            } else if (password !== null) {
+                alert('❌ Invalid Password! Please enter the correct password.');
+            }
+        }
+
+        function exportEnquiryToExcel() {
+            if (enquiryData.length === 0) {
+                alert("ℹ️ No new enquiries available currently.");
+                return;
+            }
+            
+            const excelRows = enquiryData.map(item => ({
+                "Student Name": item.name,
+                "Standard": item.std,
+                "Date of Birth": item.dob,
+                "Selected Course": item.course
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(excelRows);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Enquiries");
+            XLSX.writeFile(workbook, "Shree_Institute_Enquiry_List.xlsx");
+        }
+    </script>
+</body>
+</html>
